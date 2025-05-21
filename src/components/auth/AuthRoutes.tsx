@@ -30,12 +30,10 @@ export const ProtectedRoute: React.FC<ProtectedRouteProps> = ({
   const location = useLocation();
 
   if (!auth.authenticated) {
-    // Not authenticated, redirect to login/home
     return <Navigate to="/" state={{ from: location }} replace />;
   }
 
   if (auth.userType !== requiredUserType) {
-    // Authenticated, but wrong user type
     console.warn(
       `Access denied: User type '${auth.userType}' tried to access route for '${requiredUserType}'. Redirecting.`
     );
@@ -48,7 +46,6 @@ export const ProtectedRoute: React.FC<ProtectedRouteProps> = ({
         <Navigate to="/merchant/dashboard" state={{ from: location }} replace />
       );
     } else {
-      // Fallback if userType is somehow invalid, or for unexpected scenarios
       localStorage.removeItem("coreUserToken");
       localStorage.removeItem("merchantToken");
       localStorage.removeItem("activeUserType");
@@ -56,7 +53,6 @@ export const ProtectedRoute: React.FC<ProtectedRouteProps> = ({
     }
   }
 
-  // Authenticated and correct user type
   return children ? <>{children}</> : <Outlet />;
 };
 
@@ -74,13 +70,10 @@ export const PublicOnlyRoute: React.FC<AuthRouteProps> = ({ children }) => {
         <Navigate to="/merchant/dashboard" state={{ from: location }} replace />
       );
     } else {
-      // Fallback for unknown userType with existing tokens - clear and allow public access
       console.warn("Unknown userType with active token. Clearing tokens.");
       localStorage.removeItem("coreUserToken");
       localStorage.removeItem("merchantToken");
       localStorage.removeItem("activeUserType");
-      // Allow access to public route, or redirect to home as a stricter measure
-      // return <Navigate to="/" state={{ from: location }} replace />;
     }
   }
 
